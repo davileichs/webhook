@@ -1,39 +1,38 @@
-# Build stage
-FROM node:22-alpine AS builder
+# Frontend build stage
+FROM node:22-alpine AS web-builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package.json ./
+# Build-time env (Vite embeds this into the bundle)
+ARG GEMINI_API_KEY
 
-# Install dependencies
+COPY package.json ./
 RUN npm install
 
-# Copy source code
 COPY . .
 
-# Build the application
+# Ensure Vite can read GEMINI_API_KEY during `vite build`
+# (.env.local is excluded by .dockerignore, so we generate .env.production here)
+RUN if [ -n "$GEMINI_API_KEY" ]; then echo "GEMINI_API_KEY=$GEMINI_API_KEY" > .env.production; fi
 RUN npm run build
 
-# Production stage
-FROM nginx:alpine
+# Runtime stage: single process (backend serves frontend)
+FROM node:22-alpine
 
-# Copy built assets from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
+WORKDIR /app
 
-# Copy nginx configuration (optional - nginx default config works for SPA)
-RUN echo 'server { \
-    listen 80; \
-    server_name _; \
-    root /usr/share/nginx/html; \
-    index index.html; \
-    location / { \
-        try_files $uri $uri/ /index.html; \
-    } \
-}' > /etc/nginx/conf.d/default.conf
+# Install server deps
+COPY server/package.json ./server/package.json
+RUN cd server && npm install --omit=dev
 
-# Expose port 80
-EXPOSE 80
+# Copy server code
+COPY server ./server
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Copy built frontend into server public dir
+COPY --from=web-builder /app/dist ./server/public
+
+ENV PORT=3001
+ENV DATA_DIR=/data
+EXPOSE 3001
+
+CMD ["node", "server/index.js"]

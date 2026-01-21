@@ -1,0 +1,170 @@
+/* Payabl-inspired theme (tokens + small utility classes)
+   Note: colors are "inspired by" payabl.com; tweak RGBs here if needed. */
+
+:root {
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 10px;
+
+  /* Accent (Payabl green-ish) */
+  --accent-rgb: 0 231 167;
+  --accent-contrast-rgb: 5 16 12;
+
+  /* Status colors */
+  --danger-rgb: 255 77 77;
+  --warning-rgb: 245 197 66;
+  --info-rgb: 122 167 255;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.mono {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+    "Courier New", monospace;
+}
+
+.theme-dark {
+  --bg-rgb: 6 10 9;
+  --panel-rgb: 12 18 16;
+  --panel-2-rgb: 16 24 21;
+  --border-rgb: 255 255 255;
+  --border-a: 0.08;
+  --text-rgb: 246 248 248;
+  --muted-rgb: 173 185 187;
+  --muted-2-rgb: 132 146 149;
+}
+
+.theme-light {
+  --bg-rgb: 246 248 248;
+  --panel-rgb: 255 255 255;
+  --panel-2-rgb: 244 246 247;
+  --border-rgb: 10 15 14;
+  --border-a: 0.10;
+  --text-rgb: 10 15 14;
+  --muted-rgb: 84 97 102;
+  --muted-2-rgb: 118 131 136;
+}
+
+/* Base surfaces */
+.bg-app {
+  background-color: rgb(var(--bg-rgb) / 1);
+}
+.bg-panel {
+  background-color: rgb(var(--panel-rgb) / 1);
+}
+.bg-panel-2 {
+  background-color: rgb(var(--panel-2-rgb) / 1);
+}
+.text-app {
+  color: rgb(var(--text-rgb) / 1);
+}
+.text-muted {
+  color: rgb(var(--muted-rgb) / 1);
+}
+.text-muted-2 {
+  color: rgb(var(--muted-2-rgb) / 1);
+}
+.border-app {
+  border-color: rgb(var(--border-rgb) / var(--border-a));
+}
+
+/* Accent utilities */
+.text-accent {
+  color: rgb(var(--accent-rgb) / 1);
+}
+.bg-accent {
+  background-color: rgb(var(--accent-rgb) / 1);
+  color: rgb(var(--accent-contrast-rgb) / 1);
+}
+.bg-accent-soft {
+  background-color: rgb(var(--accent-rgb) / 0.12);
+}
+.border-accent {
+  border-color: rgb(var(--accent-rgb) / 0.45);
+}
+.ring-accent:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(var(--accent-rgb) / 0.22);
+}
+
+/* Hover helpers (since Tailwind CDN won't generate custom hover variants) */
+.hover-panel:hover {
+  background-color: rgb(var(--panel-2-rgb) / 1);
+}
+.icon-btn-accent {
+  border: 1px solid rgb(var(--border-rgb) / var(--border-a));
+  color: rgb(var(--accent-rgb) / 1);
+  border-radius: 999px;
+}
+.icon-btn-accent:hover {
+  background-color: rgb(var(--accent-rgb) / 1);
+  color: rgb(var(--accent-contrast-rgb) / 1);
+}
+
+/* Reusable “surface” look */
+.surface {
+  background-color: rgb(var(--panel-rgb) / 1);
+  border: 1px solid rgb(var(--border-rgb) / var(--border-a));
+  border-radius: var(--radius-lg);
+}
+.surface-soft {
+  background-color: rgb(var(--panel-2-rgb) / 1);
+  border: 1px solid rgb(var(--border-rgb) / var(--border-a));
+  border-radius: var(--radius-lg);
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: rgb(var(--accent-rgb) / 1);
+  color: rgb(var(--accent-contrast-rgb) / 1);
+}
+.btn-primary:hover {
+  filter: brightness(0.96);
+}
+.btn-ghost:hover {
+  background-color: rgb(var(--border-rgb) / 0.06);
+}
+
+/* Badges (status pills) */
+.badge-post {
+  color: rgb(var(--accent-rgb) / 1);
+  background-color: rgb(var(--accent-rgb) / 0.12);
+}
+.badge-get {
+  color: rgb(var(--info-rgb) / 1);
+  background-color: rgb(var(--info-rgb) / 0.12);
+}
+.badge-put {
+  color: rgb(var(--warning-rgb) / 1);
+  background-color: rgb(var(--warning-rgb) / 0.14);
+}
+.badge-delete {
+  color: rgb(var(--danger-rgb) / 1);
+  background-color: rgb(var(--danger-rgb) / 0.12);
+}
+.badge-default {
+  color: rgb(var(--muted-rgb) / 1);
+  background-color: rgb(var(--border-rgb) / 0.06);
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(var(--border-rgb) / 0.18);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgb(var(--border-rgb) / 0.28);
+}
+

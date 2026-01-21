@@ -21,11 +21,11 @@ export const tryParseJson = (data: string): any | null => {
 
 export const getStatusColor = (method: string) => {
   switch (method.toUpperCase()) {
-    case 'POST': return 'text-green-400 bg-green-400/10';
-    case 'GET': return 'text-blue-400 bg-blue-400/10';
-    case 'PUT': return 'text-yellow-400 bg-yellow-400/10';
-    case 'DELETE': return 'text-red-400 bg-red-400/10';
-    default: return 'text-slate-400 bg-slate-400/10';
+    case 'POST': return 'badge-post';
+    case 'GET': return 'badge-get';
+    case 'PUT': return 'badge-put';
+    case 'DELETE': return 'badge-delete';
+    default: return 'badge-default';
   }
 };
 
@@ -55,4 +55,36 @@ export const downloadJson = (data: any, filename: string) => {
   link.download = filename;
   link.click();
   URL.revokeObjectURL(url);
+};
+
+export const copyTextToClipboard = async (text: string): Promise<boolean> => {
+  // Modern async Clipboard API (requires secure context; may be unavailable in some environments)
+  try {
+    if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+      return true;
+    }
+  } catch (e) {
+    // fall through to legacy method
+    console.warn('Clipboard API copy failed, trying fallback.', e);
+  }
+
+  // Fallback for older/locked-down browsers
+  try {
+    const el = document.createElement('textarea');
+    el.value = text;
+    el.setAttribute('readonly', '');
+    el.style.position = 'fixed';
+    el.style.left = '-9999px';
+    el.style.top = '0';
+    document.body.appendChild(el);
+    el.select();
+    el.setSelectionRange(0, el.value.length);
+    const ok = document.execCommand('copy');
+    document.body.removeChild(el);
+    return ok;
+  } catch (e) {
+    console.warn('Fallback copy failed.', e);
+    return false;
+  }
 };

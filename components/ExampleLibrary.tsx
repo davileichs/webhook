@@ -56,7 +56,7 @@ const TEMPLATES = [
 ];
 
 const ExampleLibrary: React.FC<ExampleLibraryProps> = ({ onSelect, theme = 'dark' }) => {
-  const isDark = theme === 'dark';
+  void theme;
 
   return (
     <div className="grid grid-cols-1 gap-2">
@@ -81,10 +81,10 @@ const ExampleLibrary: React.FC<ExampleLibraryProps> = ({ onSelect, theme = 'dark
               origin: '8.8.8.8'
             });
           }}
-          className={`text-left p-3 rounded-lg border transition-all group ${isDark ? 'bg-slate-800/50 hover:bg-slate-800 border-slate-700' : 'bg-white hover:bg-slate-50 border-slate-200 shadow-sm hover:shadow'}`}
+          className="text-left p-3 rounded-lg border transition-all group bg-panel border-app hover-panel"
         >
-          <div className="text-[10px] font-bold text-blue-600 mb-1 uppercase tracking-tight">{t.method}</div>
-          <div className={`text-xs font-semibold ${isDark ? 'text-slate-200 group-hover:text-white' : 'text-slate-700 group-hover:text-slate-900'}`}>{t.name}</div>
+          <div className="text-[10px] font-bold text-accent mb-1 uppercase tracking-tight">{t.method}</div>
+          <div className="text-xs font-semibold text-app">{t.name}</div>
         </button>
       ))}
     </div>
