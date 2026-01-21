@@ -1,0 +1,5 @@
+{
+  "name": "HookLog - Webhook Debugger",
+  "description": "A professional-grade webhook inspector and callback debugger. Capture, view, and analyze webhook payloads, headers, and JSON structures with ease.",
+  "requestFramePermissions": []
+}

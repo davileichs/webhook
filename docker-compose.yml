@@ -1,0 +1,28 @@
+services:
+  webhook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        GEMINI_API_KEY: ${GEMINI_API_KEY}
+    ports:
+      - "4455:3001"
+    environment:
+      - PORT=3001
+      - DATA_DIR=/data
+      # Abuse protection for /hook/:id (recommended)
+      # - HOOK_TOKEN=change_me_to_a_long_random_secret
+      # - HOOK_TOKEN_HEADER=x-hook-token   # optional (default: x-hook-token)
+      # - HOOK_TOKEN_QUERY=token           # optional (default: token)
+      # - HOOK_RATE_LIMIT_WINDOW_MS=60000  # optional (default: 60000)
+      # - HOOK_RATE_LIMIT_MAX=60           # optional (default: 60)
+      # - HOOK_IP_ALLOWLIST=1.2.3.4,5.6.7.8 # optional (exact match against req.ip)
+      # Session/API rate limit (slows brute-force/enumeration of /api/sessions/*)
+      # - API_RATE_LIMIT_WINDOW_MS=60000   # optional (default: 60000)
+      # - API_RATE_LIMIT_MAX=300           # optional (default: 300)
+    volumes:
+      - hooklog-data:/data
+    restart: unless-stopped
+
+volumes:
+  hooklog-data:
