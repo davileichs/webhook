@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
 import { WebhookRequest } from '../types';
-import { getStatusColor, formatTimestamp } from '../utils/helpers';
+import { getStatusColor, formatTimestamp, looksLikeFormUrlEncoded, tryParseFormUrlEncoded } from '../utils/helpers';
 import JsonViewer from './JsonViewer';
 
 interface RequestViewerProps {
@@ -11,9 +11,12 @@ interface RequestViewerProps {
 
 const RequestViewer: React.FC<RequestViewerProps> = ({ request, theme = 'dark' }) => {
   const [queryViewMode, setQueryViewMode] = useState<'list' | 'json'>('json');
+  const [bodyViewMode, setBodyViewMode] = useState<'formatted' | 'plain'>('formatted');
 
   const hasBody = request.body && request.body.trim().length > 0;
   const hasQuery = Object.keys(request.query).length > 0;
+  const parsedForm = hasBody ? tryParseFormUrlEncoded(request.body) : null;
+  const hasFormattedBody = Boolean(request.parsedBody) || Boolean(parsedForm);
 
   return (
     <div className="flex flex-col h-full overflow-hidden transition-colors bg-app text-app">
@@ -57,18 +60,56 @@ const RequestViewer: React.FC<RequestViewerProps> = ({ request, theme = 'dark' }
           <section>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-2">Payload / Body</h3>
+              {hasBody && (
+                <div className="flex rounded-lg p-1 border transition-colors bg-panel border-app">
+                  <button
+                    onClick={() => setBodyViewMode('formatted')}
+                    className={`px-3 py-1 text-[10px] font-bold rounded transition-colors ${
+                      bodyViewMode === 'formatted' ? 'bg-accent shadow-sm' : 'text-muted btn-ghost'
+                    }`}
+                    disabled={!hasFormattedBody}
+                    title={hasFormattedBody ? 'Show formatted body' : 'No formatted view available'}
+                  >
+                    FORMATTED
+                  </button>
+                  <button
+                    onClick={() => setBodyViewMode('plain')}
+                    className={`px-3 py-1 text-[10px] font-bold rounded transition-colors ${
+                      bodyViewMode === 'plain' ? 'bg-accent shadow-sm' : 'text-muted btn-ghost'
+                    }`}
+                    title="Show raw body"
+                  >
+                    PLAIN
+                  </button>
+                </div>
+              )}
             </div>
             <div className="space-y-4">
-              {request.parsedBody ? (
-                <JsonViewer data={request.parsedBody} theme={theme} />
-              ) : hasBody ? (
-                <pre className="p-4 rounded-lg mono text-sm border border-app bg-panel whitespace-pre-wrap overflow-x-auto transition-colors text-muted">
-                  {request.body}
-                </pre>
-              ) : (
+              {!hasBody ? (
                 <div className="italic py-8 text-center rounded-xl border border-dashed text-sm transition-colors text-muted bg-panel-2 border-app">
                   No request body content
                 </div>
+              ) : bodyViewMode === 'plain' || !hasFormattedBody ? (
+                <pre className="p-4 rounded-lg mono text-sm border border-app bg-panel whitespace-pre-wrap overflow-x-auto transition-colors text-muted">
+                  {request.body}
+                </pre>
+              ) : request.parsedBody ? (
+                <JsonViewer data={request.parsedBody} theme={theme} />
+              ) : parsedForm ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {Object.entries(parsedForm).map(([key, value]) => (
+                    <div key={key} className="flex flex-col p-3 rounded border border-app transition-colors group bg-panel hover-panel">
+                      <span className="text-accent font-medium truncate mono text-[10px] uppercase tracking-widest mb-1">{key}</span>
+                      <span className="break-all text-xs mono leading-relaxed text-muted">
+                        {Array.isArray(value) ? value.join(', ') : value}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <pre className="p-4 rounded-lg mono text-sm border border-app bg-panel whitespace-pre-wrap overflow-x-auto transition-colors text-muted">
+                  {request.body}
+                </pre>
               )}
             </div>
           </section>

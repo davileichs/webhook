@@ -19,6 +19,40 @@ export const tryParseJson = (data: string): any | null => {
   }
 };
 
+export const looksLikeFormUrlEncoded = (data: string): boolean => {
+  if (typeof data !== 'string') return false;
+  const s = data.trim();
+  if (!s) return false;
+  // quick reject for JSON-ish bodies
+  if (s.startsWith('{') || s.startsWith('[')) return false;
+  const parts = s.split('&').filter(Boolean);
+  if (parts.length === 0) return false;
+  // every part should contain '=' and a non-empty key
+  for (const part of parts) {
+    const eq = part.indexOf('=');
+    if (eq <= 0) return false;
+  }
+  return true;
+};
+
+export const tryParseFormUrlEncoded = (data: string): Record<string, string | string[]> | null => {
+  if (!looksLikeFormUrlEncoded(data)) return null;
+  try {
+    const s = data.trim().replace(/^\?/, '');
+    const params = new URLSearchParams(s);
+    const out: Record<string, string | string[]> = {};
+    const keys = new Set<string>();
+    for (const [k] of params.entries()) keys.add(k);
+    for (const k of keys) {
+      const all = params.getAll(k);
+      out[k] = all.length <= 1 ? (all[0] ?? '') : all;
+    }
+    return out;
+  } catch {
+    return null;
+  }
+};
+
 export const getStatusColor = (method: string) => {
   switch (method.toUpperCase()) {
     case 'POST': return 'badge-post';

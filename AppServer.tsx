@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Session, WebhookRequest } from './types';
-import { copyTextToClipboard, tryParseJson } from './utils/helpers';
-import ExampleLibrary from './components/ExampleLibrary';
+import { copyTextToClipboard, getStatusColor, tryParseJson } from './utils/helpers';
 import RequestViewer from './components/RequestViewer';
 
 const LS_SESSION_IDS = 'hooklog_session_ids';
@@ -237,15 +236,6 @@ const AppServer: React.FC = () => {
     setSelectedRequestId(null);
   };
 
-  const addRequest = async (req: WebhookRequest) => {
-    if (!activeSessionId) return;
-    const newReq = { ...req, endpointId: activeSessionId };
-    await fetchJson(`/api/sessions/${encodeURIComponent(activeSessionId)}/requests`, {
-      method: 'POST',
-      body: JSON.stringify(newReq)
-    });
-  };
-
   const copyHook = async () => {
     if (!hookEndpointUrl) return;
     const ok = await copyTextToClipboard(hookEndpointUrl);
@@ -329,7 +319,9 @@ const AppServer: React.FC = () => {
                   >
                     <div className="flex justify-between items-center mb-1">
                       <span className="text-[10px] mono text-muted-2">{new Date(req.timestamp).toLocaleTimeString()}</span>
-                      <span className="text-[9px] font-bold uppercase text-muted-2">{req.method}</span>
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${getStatusColor(req.method)}`}>
+                        {req.method}
+                      </span>
                     </div>
                     <div className="text-sm font-semibold truncate text-app">
                       {req.parsedBody?.event || req.parsedBody?.type || req.parsedBody?.action || 'Request Data'}
@@ -338,10 +330,6 @@ const AppServer: React.FC = () => {
                 ))
               )}
             </div>
-          </section>
-          <section>
-            <h3 className="text-[10px] font-bold uppercase tracking-widest mb-3 px-2 text-muted-2">Mock Generator</h3>
-            <ExampleLibrary onSelect={addRequest} theme={theme} />
           </section>
         </div>
       </div>

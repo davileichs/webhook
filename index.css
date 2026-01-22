@@ -6,7 +6,7 @@
   --radius-md: 12px;
   --radius-sm: 10px;
 
-  /* Accent (Payabl green-ish) */
+  /* Accent (Payabl green-ish) - default used for dark theme */
   --accent-rgb: 0 231 167;
   --accent-contrast-rgb: 5 16 12;
 
@@ -48,6 +48,10 @@ body {
   --text-rgb: 10 15 14;
   --muted-rgb: 84 97 102;
   --muted-2-rgb: 118 131 136;
+
+  /* Darker accent for light mode (less neon) */
+  --accent-rgb: 0 148 107;
+  --accent-contrast-rgb: 255 255 255;
 }
 
 /* Base surfaces */

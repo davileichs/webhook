@@ -3,7 +3,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { WebhookRequest, Session } from './types';
 import { generateId, tryParseJson } from './utils/helpers';
 import RequestViewer from './components/RequestViewer';
-import ExampleLibrary from './components/ExampleLibrary';
 
 const App: React.FC = () => {
   const [sessions, setSessions] = useState<Session[]>([]);
@@ -159,13 +158,6 @@ const App: React.FC = () => {
     if (e.key === 'Escape') setEditingSessionId(null);
   };
 
-  const addRequest = (req: WebhookRequest) => {
-    if (!activeSessionId) return;
-    const newReq = { ...req, endpointId: activeSessionId };
-    setRequests(prev => [newReq, ...prev]);
-    setSelectedRequestId(newReq.id);
-  };
-
   const clearHistory = () => {
     if (confirm("Clear all request history for this session?")) {
       setRequests(prev => prev.filter(r => r.endpointId !== activeSessionId));
@@ -247,10 +239,6 @@ const App: React.FC = () => {
                 ))
               )}
             </div>
-          </section>
-          <section>
-            <h3 className={`text-[10px] font-bold uppercase tracking-widest mb-3 px-2 ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Templates</h3>
-            <ExampleLibrary onSelect={addRequest} theme={theme} />
           </section>
         </div>
       </div>
