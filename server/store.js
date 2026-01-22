@@ -115,9 +115,7 @@ class JsonStore {
     await this._withWriteLock(async () => {
       if (!this.db.requests[sessionId]) this.db.requests[sessionId] = [];
       this.db.requests[sessionId].unshift(reqObj);
-      if (this.db.requests[sessionId].length > this.maxRequestsPerSession) {
-        this.db.requests[sessionId].length = this.maxRequestsPerSession;
-      }
+      // History is preserved - no automatic truncation
       await this._flush();
     });
     return reqObj;
